@@ -8,7 +8,7 @@ Stripped down version of python-simple-hipchat for v2 hipchat api.  Currently on
 
 Dependencies
 ------------
-None beyond the Python standard library.
+Six, Python 2 and 3 compatibility library: https://pythonhosted.org/six/
 
 
 Usage
