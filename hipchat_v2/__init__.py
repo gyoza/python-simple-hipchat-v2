@@ -1,17 +1,13 @@
-try:
-    from urllib.parse import urljoin
-    from urllib.parse import urlencode
-    import urllib.request as urlrequest
-except ImportError:
-    from urlparse import urljoin
-    from urllib import urlencode
-    import urllib2 as urlrequest
+from six.moves.urllib.parse import urljoin, urlencode
+import six.moves.urllib.request as urlrequest
 import json
 
 API_URL_DEFAULT = 'https://www.hipchat.com/'
 FORMAT_DEFAULT = 'json'
 
+
 class HipChat(object):
+
     def __init__(self, token=None, url=API_URL_DEFAULT, format=FORMAT_DEFAULT):
         self.url = url
         self.token = token
@@ -19,7 +15,9 @@ class HipChat(object):
         self.opener = urlrequest.build_opener(urlrequest.HTTPSHandler())
 
     class RequestWithMethod(urlrequest.Request):
-        def __init__(self, url, data=None, headers={}, origin_req_host=None, unverifiable=False, http_method=None):
+
+        def __init__(self, url, data=None, headers=None, origin_req_host=None, unverifiable=False, http_method=None):
+            headers = headers or {}
             urlrequest.Request.__init__(self, url, data, headers, origin_req_host, unverifiable)
             if http_method:
                 self.method = http_method
@@ -34,19 +32,19 @@ class HipChat(object):
         req = self.RequestWithMethod(method_url, http_method=method, headers=headers, data=data)
         response = self.opener.open(req, None, timeout).read()
 
-    def message_room(self, room_id='', message='', message_format='text', color='', notify=False, token=''):
+    def message_room(self, room_id='', message_from='', message='', message_format='text', color='', notify=False):
         url = 'v2/room/%d/notification' % room_id
         headers = {
-              "content-type": "application/json",
-              "authorization": "Bearer %s" % token
+            "content-type": "application/json",
+            "authorization": "Bearer %s" % self.token
         }
 
         data = json.dumps({
-          'message': message,
-          'color': color,
-          'message_format': message_format,
-          'notify': notify,
-          'from': 'me'
+            'message': message,
+            'color': color,
+            'message_format': message_format,
+            'notify': notify,
+            'from': message_from
         })
 
         return self.method(url, headers=headers, data=data)
