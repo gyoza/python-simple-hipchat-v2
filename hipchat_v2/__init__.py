@@ -32,19 +32,20 @@ class HipChat(object):
         req = self.RequestWithMethod(method_url, http_method=method, headers=headers, data=data)
         response = self.opener.open(req, None, timeout).read()
 
-    def message_room(self, room_id='', message_from='', message='', message_format='text', color='', notify=False):
+    def message_room(self, room_id='', message='', message_format='text', color='', notify=False, token='', card=''):
         url = 'v2/room/%d/notification' % room_id
         headers = {
-            "content-type": "application/json",
-            "authorization": "Bearer %s" % self.token
+              "content-type": "application/json",
+              "authorization": "Bearer %s" % token
         }
-
+     
         data = json.dumps({
-            'message': message,
-            'color': color,
-            'message_format': message_format,
-            'notify': notify,
-            'from': message_from
+          'message': message,
+          'color': color,
+          'message_format': message_format,
+          'card': card,
+          'notify': notify,
+          'from': 'me'
         })
 
         return self.method(url, headers=headers, data=data)
